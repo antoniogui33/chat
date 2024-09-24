@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="Pt-Br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        div {
+            height: 400px;
+            width: 200px;
+            border: solid black 1px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: scroll;
+        }
+
+        textarea {
+            width: 200px;
+        }
+    </style>
+    <title>Chat</title>
+</head>
+
+<body>
+    <div></div>
+    <textarea></textarea>
+
+    <script type="module">
+        const input = document.querySelector("textarea");
+        const chatHistory = document.querySelector("div");
+        input.addEventListener("keydown", async (e) => {
+            if (e.key === "Enter") {
+                fetch('/postChat', {
+                    method: "post",
+                    body: JSON.stringify(input.value)
+                })
+                input.value = '';
+            }
+        })
+        setInterval(async () => {
+            const updatedChat = await fetch('/getChat').then(response => response.json())
+            chatHistory.innerHTML = '';
+            updatedChat.forEach(message => {
+                const messageContainer = document.createElement("p");
+                messageContainer.textContent = message;
+                chatHistory.appendChild(messageContainer)
+            })
+        }, 200);
+    </script>
+</body>
+
+</html>
